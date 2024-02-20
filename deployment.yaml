@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: esc-target
+spec:
+  selector:
+    app: esc-target
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esc-target
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: esc-target
+  template:
+    metadata:
+      labels:
+        app: esc-target
+    spec:
+      containers:
+        - name: esc-target
+          image: esc-target-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    db: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      db: redis
+  template:
+    metadata:
+      labels:
+        db: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:latest
+          command: ["redis-server", "--requirepass", "pass"]
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "--raw", "incr", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 2

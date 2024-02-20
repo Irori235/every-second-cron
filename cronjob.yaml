@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: esc-trigger
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: triger
+              image: esc-cron-app:latest
+              imagePullPolicy: Never
+              env:
+                - name: REDIS_ADDR
+                  value: "redis:6379"
+                - name: REDIS_PWD
+                  value: "pass"
+                - name: TARGET_HOST
+                  value: "esc-target"
+          restartPolicy: OnFailure
+          startingDeadlineSeconds: 10
