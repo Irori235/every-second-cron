@@ -1,0 +1,22 @@
+version: "3"
+
+tasks:
+  up:
+    cmds:
+      - kind create cluster --name every-second-cron
+
+  down:
+    cmds:
+      - kubectl delete -k ./
+      - kind delete cluster --name every-second-cron
+
+  build:
+    cmds:
+      - docker build -t esc-cron-app:latest ./apps/cron
+      - docker build -t esc-target-app:latest ./apps/target
+
+  apply:
+    cmds:
+      - kind load docker-image esc-cron-app:latest --name every-second-cron
+      - kind load docker-image esc-target-app:latest --name every-second-cron
+      - kubectl apply -k ./
