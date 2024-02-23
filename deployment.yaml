@@ -62,7 +62,14 @@ spec:
       containers:
         - name: redis
           image: redis:latest
-          command: ["redis-server", "--requirepass", "pass"]
+          command: ["redis-server"]
+          args: ["--requirepass", "$(REDIS_PASSWORD)"]
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-password
+                  key: redis-password
           ports:
             - containerPort: 6379
           readinessProbe:

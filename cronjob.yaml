@@ -4,6 +4,7 @@ metadata:
   name: esc-trigger
 spec:
   schedule: "* * * * *"
+  startingDeadlineSeconds: 10
   jobTemplate:
     spec:
       template:
@@ -16,8 +17,10 @@ spec:
                 - name: REDIS_ADDR
                   value: "redis:6379"
                 - name: REDIS_PWD
-                  value: "pass"
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-password
+                      key: redis-password
                 - name: TARGET_HOST
                   value: "esc-target"
           restartPolicy: OnFailure
-          startingDeadlineSeconds: 10
