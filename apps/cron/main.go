@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -33,6 +34,8 @@ func main() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
+	fmt.Println("Cron job start :", time.Now())
+
 	for {
 		select {
 		case <-ticker.C:
@@ -42,6 +45,7 @@ func main() {
 			}
 		case msg := <-sub:
 			if msg.Payload == "fire" {
+				fmt.Println("Cron job finish :", time.Now())
 				return
 			}
 		}
